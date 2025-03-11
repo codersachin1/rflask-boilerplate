@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 
 from bson import ObjectId
+from pymongo.errors import OperationFailure
 
-from modules.comment.errors import CommentCreationError, CommentUpdateError
+from modules.comment.errors import CommentCreationError, CommentUpdateError, DatabaseError
 from modules.comment.internal.comment_util import validate_task_and_user_exists
 from modules.comment.internal.store.comment_model import CommentModel
 from modules.comment.internal.store.comment_repository import CommentRepository
@@ -44,3 +45,18 @@ class CommentWriter:
 
         except Exception as e:
             raise CommentUpdateError(f"An error occurred while updating the comment: {str(e)}")
+
+    @classmethod
+    def delete_comment(cls, comment_id: str) -> bool:
+        try:
+            comment_id = ObjectId(comment_id)
+
+            result = CommentRepository.collection().delete_one({"_id": comment_id})
+
+            if result.deleted_count == 0:
+                return False
+
+            return True
+
+        except OperationFailure as e:
+            raise DatabaseError(f"An error occurred while deleting the comment: {str(e)}")

@@ -6,10 +6,10 @@ from bson.objectid import ObjectId
 from modules.account.errors import (
     AccountInvalidPasswordError,
     AccountWithIdNotFoundError,
-    AccountWithUsernameNotFoundError,
-    AccountWithPhoneNumberNotFoundError,
     AccountWithPhoneNumberExistsError,
+    AccountWithPhoneNumberNotFoundError,
     AccountWithUserNameExistsError,
+    AccountWithUsernameNotFoundError,
 )
 from modules.account.internal.account_util import AccountUtil
 from modules.account.internal.store.account_repository import AccountRepository
@@ -78,3 +78,13 @@ class AccountReader:
 
         if account_bson:
             raise AccountWithPhoneNumberExistsError(phone_number=phone_number)
+
+    @staticmethod
+    def get_all_users_excluding_logged_in_user(logged_in_user_id: str) -> list[Account]:
+        logged_in_user_id = ObjectId(logged_in_user_id)
+        account_bson_list = AccountRepository.collection().find({"_id": {"$ne": logged_in_user_id}, "active": True})
+
+        if not account_bson_list:
+            return []
+
+        return [AccountUtil.convert_account_bson_to_account(account_bson) for account_bson in account_bson_list]

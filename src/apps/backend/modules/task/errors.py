@@ -17,15 +17,6 @@ class TaskBadRequestError(AppError):
         super().__init__(code=TaskErrorCode.BAD_REQUEST, http_status_code=400, message=message)
 
 
-class TaskAlreadyExistsError(AppError):
-    def __init__(self, task_name: str) -> None:
-        super().__init__(
-            code=TaskErrorCode.ALREADY_EXISTS,
-            http_status_code=409,
-            message=f"A task with the name '{task_name}' already exists. Please choose a different name.",
-        )
-
-
 class TaskServiceError(AppError):
     def __init__(self, message: str) -> None:
         super().__init__(code=TaskErrorCode.SERVICE_ERROR, http_status_code=500, message=message)
@@ -34,8 +25,3 @@ class TaskServiceError(AppError):
 class DatabaseError(AppError):
     def __init__(self, message: str) -> None:
         super().__init__(code=TaskErrorCode.DATABASE_ERROR, http_status_code=500, message=message)
-
-
-class TaskConversionError(AppError):
-    def __init__(self, message: str) -> None:
-        super().__init__(code=TaskErrorCode.CONVERSION_ERROR, http_status_code=500, message=message)

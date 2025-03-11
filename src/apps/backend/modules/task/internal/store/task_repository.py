@@ -40,14 +40,3 @@ class TaskRepository(ApplicationRepository):
             else:
                 Logger.error(message=f"OperationFailure occurred for collection tasks: {e.details}")
         return True
-
-    @classmethod
-    def create_task(cls, collection: Collection, task_data: dict) -> str:
-        result = collection.insert_one(task_data)
-        return str(result.inserted_id)
-
-    @classmethod
-    def get_tasks(cls, collection: Collection, filters: dict = None) -> list:
-        filters = filters or {}
-        tasks = collection.find(filters)
-        return [TaskModel.from_bson(task) for task in tasks]

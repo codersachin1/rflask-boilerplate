@@ -56,3 +56,7 @@ class AccountService:
     @staticmethod
     def get_account_by_id(*, params: AccountSearchByIdParams) -> Account:
         return AccountReader.get_account_by_id(params=params)
+
+    @staticmethod
+    def get_all_users_excluding_logged_in_user(logged_in_user_id: str) -> list[Account]:
+        return AccountReader.get_all_users_excluding_logged_in_user(logged_in_user_id=logged_in_user_id)

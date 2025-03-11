@@ -28,10 +28,10 @@ class CommentView(MethodView):
             return jsonify(comment_dict), 201
 
         except CommentBadRequestError as e:
-            return jsonify({"error": e.message}), e.http_status_code
+            return jsonify({"error": e.message})
 
         except CommentCreationError as e:
-            return jsonify({"error": e.message}), e.http_status_code
+            return jsonify({"error": e.message})
 
         except Exception:
             return jsonify({"error": "Internal Server Error"}), 500
@@ -56,10 +56,10 @@ class CommentView(MethodView):
             return jsonify(comment_dict_list), 200
 
         except CommentNotFoundError as e:
-            return jsonify({"error": e.message}), e.http_status_code
+            return jsonify({"error": e.message})
 
         except CommentServiceError as e:
-            return jsonify({"error": e.message}), e.http_status_code
+            return jsonify({"error": e.message})
 
         except Exception as e:
             return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
@@ -80,7 +80,22 @@ class CommentView(MethodView):
                 return jsonify({"error": "Comment update failed"}), 400
 
         except CommentUpdateError as e:
-            return jsonify({"error": e.message}), e.http_status_code
+            return jsonify({"error": e.message})
 
         except Exception as e:
             return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+    def delete(self, comment_id: str):
+        try:
+            CommentService.delete_comment(comment_id)
+
+            return jsonify({"message": "Comment deleted successfully"}), 200
+
+        except CommentNotFoundError as e:
+            return jsonify({"error": e.message})
+
+        except CommentServiceError as e:
+            return jsonify({"error": e.message})
+
+        except Exception:
+            return jsonify({"error": "Internal Server Error"}), 500

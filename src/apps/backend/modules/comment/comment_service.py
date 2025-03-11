@@ -41,3 +41,18 @@ class CommentService:
             raise e
         except Exception as e:
             raise CommentUpdateError(f"An unexpected error occurred while updating the comment: {str(e)}")
+
+    @staticmethod
+    def delete_comment(comment_id: str) -> bool:
+        try:
+            deleted = CommentWriter.delete_comment(comment_id)
+            if not deleted:
+                raise CommentNotFoundError(f"Comment with ID {comment_id} not found.")
+
+            return True
+
+        except CommentNotFoundError as e:
+            raise e
+
+        except Exception as e:
+            raise CommentServiceError(f"An unexpected error occurred while deleting the comment: {str(e)}")

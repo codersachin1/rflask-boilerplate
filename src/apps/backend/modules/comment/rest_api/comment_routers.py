@@ -13,4 +13,7 @@ class CommentRouter:
         blueprint.add_url_rule(
             "/comments/<string:comment_id>", view_func=CommentView.as_view("comment_view_update"), methods=["PUT"]
         )
+        blueprint.add_url_rule(
+            "/comments/delete/<string:comment_id>", view_func=CommentView.as_view("delete_comment"), methods=["DELETE"]
+        )
         return blueprint

@@ -1,11 +1,7 @@
-from datetime import datetime, timezone
-
-from bson import ObjectId
 from pymongo.collection import Collection
 from pymongo.errors import OperationFailure
 
 from modules.application.repository import ApplicationRepository
-from modules.comment.internal.store.comment_model import CommentModel
 from modules.logger.logger import Logger
 
 COMMENT_VALIDATION_SCHEMA = {
@@ -46,21 +42,3 @@ class CommentRepository(ApplicationRepository):
             else:
                 Logger.error(message=f"OperationFailure occurred for collection comments: {e.details}")
         return True
-
-    @classmethod
-    def create_comment(cls, collection: Collection, comment: CommentModel) -> str:
-        comment_data = comment.to_bson()
-        result = collection.insert_one(comment_data)
-        return str(result.inserted_id)
-
-    @classmethod
-    def get_comments_by_task_id(cls, collection: Collection, task_id: str) -> list:
-        comments = collection.find({"task_id": ObjectId(task_id)})
-        return [CommentModel.from_bson(comment) for comment in comments]
-
-    @classmethod
-    def update_comment(cls, collection: Collection, comment_id: str, content: str) -> bool:
-        result = collection.update_one(
-            {"_id": ObjectId(comment_id)}, {"$set": {"content": content, "updated_at": datetime.now(timezone.utc)}}
-        )
-        return result.modified_count > 0

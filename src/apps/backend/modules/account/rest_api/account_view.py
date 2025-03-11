@@ -31,12 +31,21 @@ class AccountView(MethodView):
         account_dict = asdict(account)
         return jsonify(account_dict), 201
 
-    @access_auth_middleware
-    def get(self, id: str) -> ResponseReturnValue:
+    def _get_account_by_id(self, id: str) -> ResponseReturnValue:
         account_params = AccountSearchByIdParams(id=id)
         account = AccountService.get_account_by_id(params=account_params)
         account_dict = asdict(account)
         return jsonify(account_dict), 200
+
+    @access_auth_middleware
+    def get(self, id: str = None) -> ResponseReturnValue:
+        if id:
+            return self._get_account_by_id(id)
+        else:
+            logged_in_user_id = request.account_id
+            users = AccountService.get_all_users_excluding_logged_in_user(logged_in_user_id)
+            users_dict = [asdict(user) for user in users]
+            return jsonify(users_dict), 200
 
     def patch(self, id: str) -> ResponseReturnValue:
         request_data = request.get_json()
